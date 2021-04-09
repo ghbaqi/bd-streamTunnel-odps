@@ -14,12 +14,12 @@ import org.springframework.kafka.annotation.EnableKafka;
  * 运行命令
  * <p>
  * <p>
- * nohup java -jar -Dspring.profiles.active=prd  -Dodps.batch.size=90000  -Dodps.session.life.minute=1800  stream-tunnel-demo1-0.0.1-SNAPSHOT.jar   > /dev/null 2>&1  &
- * nohup java -jar -Dspring.profiles.active=prd   -Dkafka.odps.consumer.threads=4 -Dserver.port=25525     stream-tunnel-demo1-0.0.1-SNAPSHOT.jar   > /dev/null 2>&1  &
+ *      生产环境启动命令
+ * nohup java -jar -Dspring.profiles.active=prd   -Dkafka.odps.consumer.threads=4 -Dserver.port=25525     stream-tunnel-demo1-1.0.0.jar   > /dev/null 2>&1  &
  * <p>
  * 向生产机器传输 jar  包
- * <p>
- * wget https://pi-platform-deploy.oss-cn-hangzhou-internal.aliyuncs.com/bigdata/stream-tunnel-demo1-0.0.1-SNAPSHOT.jar
+ * <p>nohup java -jar -Dspring.profiles.active=prd    -Dserver.port=2332XXXX ../stream-tunnel-demo1-1.0.0.jar   > /dev/null 2>&1  &
+ * wget https://pi-platform-deploy.oss-cn-hangzhou.aliyuncs.com/bigdata/stream-tunnel-demo1-1.0.0.jar
  * <p>
  * <p>
  * jvm 参数 :

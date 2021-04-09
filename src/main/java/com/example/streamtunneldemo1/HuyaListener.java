@@ -42,16 +42,6 @@ public class HuyaListener {
     @Autowired
     private OdpsConfiguration odpsConfiguration;
 
-    //    String[] dts = {"20210301","20210302","20210303","20210304"};
-//    String[] dts = {"20210301"};
-
-//    public static void main(String[] args) {
-//        long etLong = 1617345033276L;
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
-//        String dt = simpleDateFormat.format(new Date(etLong));
-//        System.out.println(dt);
-//    }
-
 
     @KafkaListener(topics = {"ecdnLiveAccess"}, concurrency = "${kafka.odps.consumer.threads}")
     public void listen(List<ConsumerRecord<String, String>> crs) {
@@ -72,19 +62,19 @@ public class HuyaListener {
                     log.error("没有 unix_timestamp 字段 , {}", jsonObject);
                     return;
                 }
-//            jsonObject.put("kafka_time", cr.timestamp() / 1000);
-                jsonObject.put("kafka_time", cr.timestamp());
+                jsonObject.put("kafkatime", cr.timestamp() / 1000);
+//                jsonObject.put("originallog", cr.value());
+                jsonObject.put("timestamp_str", jsonObject.getString("Timestamp"));
+                if (jsonObject.getLong("unix_timestamp").toString().length() < 12) {
+                    jsonObject.put("unix_timestamp", jsonObject.getLong("unix_timestamp") * 1000);
+                }
             } catch (Exception e) {
                 log.error("错误的消息格式 msg = {}", cr.value());
-//            log.error("错误的消息格式 msg = {}", msg);
-                return;
+                continue;
             }
 
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
             String dt = simpleDateFormat.format(new Date(etLong));
-
-//        Random random = new Random();
-//        dt = dts[random.nextInt(dts.length)];
 
             try {
 
@@ -122,7 +112,10 @@ public class HuyaListener {
                         default:
                             throw new RuntimeException("Unknown column type: " + column.getType());
                     }
+                    jsonObject.remove(column.getName());
                 }
+
+                record.set("originallog", jsonObject.toJSONString());   // 减少不必要的字段
                 TableTunnel.StreamRecordPack recordPack = sessionManager.getRecordPack(odpsConfiguration.getHuyaLiveLogTableName(), dt);
                 recordPack.append(record);
             } catch (TunnelException | IOException e) {
